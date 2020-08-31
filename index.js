@@ -27,20 +27,68 @@ app.use(bodyParser.urlencoded({ extended:false }));
 
 // routes
 app.get('/',(req, res) => {
-	res.render('items_index');
+	let sql ="SELECT * FROM items";
+	let query = connection.query(sql, (err, rows) => {
+		if(err) throw err;
+		res.render('items_index',{
+			title: "CRUD Built in Node.js",
+			items : rows
+		});
+	});	
 });
+
+
 app.get('/items_create',(req, res) => {
 	res.render('items_create');
 });
-app.get('/items_edit',(req, res) => {
-	res.render('items_edit');
-});
-app.get('/items_delete',(req, res) => {
-	res.render('items_delete');
+app.post('/save', (req, res) => {
+	let data = {name: req.body.name, quantity: req.body.quantity, amount: req.body.amount};
+	let sql = "INSERT INTO items SET ?";
+	let query = connection.query(sql, data, (err, results) => {
+		if(err) throw err;
+		res.redirect('/');
+	});
 });
 
+app.get('/items_edit/:itemId',(req, res) => {
+	const itemId = req.params.itemId;
+	let sql	= `SELECT * FROM items where id = ${itemId}`;
+	let query =connection.query(sql,(err, result) => {
+		if(err) throw err;
+		res.render('items_edit', {
+			item : result[0]
+		});
+	});
+});
+app.post('/update',(req, res) => {
+    const itemId = req.body.id;
+    let sql = "update items SET name='"+req.body.name+"',  quantity='"+req.body.quantity+"',  amount='"+req.body.amount+"' where id ="+itemId;
+    let query = connection.query(sql,(err, results) => {
+      if(err) throw err;
+      res.redirect('/');
+    });
+});
+
+app.get('/items_delete/:itemId',(req, res) => {
+	const itemId = req.params.itemId;
+	let sql	= `SELECT * FROM items where id = ${itemId}`;
+	let query =connection.query(sql,(err, result) => {
+		if(err) throw err;
+		res.render('items_delete', {
+			item : result[0]
+		});
+	});
+});
+app.get('/delete/:itemId',(req, res) => {
+	const itemId = req.params.itemId;
+	let sql	= `DELETE FROM items where id = ${itemId}`;
+	let query =connection.query(sql,(err, result) => {
+		if(err) throw err;
+		res.redirect('/');
+	});
+});
 
 // server listening
-app.listen(3000, ()=> {
-	console.log('Server listening at port 3000')
+app.listen(2000, ()=> {
+	console.log('Server listening at port 2000')
 });
