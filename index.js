@@ -5,6 +5,17 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const app =express();
 
+//database connection
+const connection= mysql.createConnection({
+	host: 'localhost',
+	user:'root',
+	password: '',
+	database: 'inventory'
+});
+connection.connect(function(error) {
+	if (!!error) console.log(error);
+	else console.log('Database connected');
+})
 
 // views file
 app.set('views' ,path.join(__dirname,'views'));
@@ -18,8 +29,14 @@ app.use(bodyParser.urlencoded({ extended:false }));
 app.get('/',(req, res) => {
 	res.render('items_index');
 });
-app.get('/item_create',(req, res) => {
+app.get('/items_create',(req, res) => {
 	res.render('items_create');
+});
+app.get('/items_edit',(req, res) => {
+	res.render('items_edit');
+});
+app.get('/items_delete',(req, res) => {
+	res.render('items_delete');
 });
 
 
